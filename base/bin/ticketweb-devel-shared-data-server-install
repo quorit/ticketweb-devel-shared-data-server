@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#default values
+devel_mode=0
+# venv_id=unset
+ticketweb_venv_root=unset
+
+
+usage()
+{
+  echo "Usage: ticketweb-devel-shared-data-server-install --devel-mode <venv_root>"
+  exit 2
+}
+
+
+PARSED_ARGUMENTS=$(getopt --name ticketweb-devel-shared-data-server-install -o d --long devel-mode -- "$@")
+
+VALID_ARGUMENTS=$?
+if [ "$VALID_ARGUMENTS" != "0" ]; then
+  usage
+fi
+
+
+eval set -- "$PARSED_ARGUMENTS"
+while :
+do
+  case "$1" in
+    --devel-mode)   devel_mode=1      ; shift   ;;
+    # -- means the end of the arguments; drop this, and break out of the while loop
+    --) shift; break ;;
+    # If invalid options were passed, then getopt should have reported an error,
+    # which we checked as VALID_ARGUMENTS when getopt was called...
+    *) echo "Unexpected option: $1 - this should not happen."
+       usage ;;
+  esac
+done
+
+
+if (( "$devel_mode" == 0 || $# != 1 )); then
+    usage
+fi
+
+ticketweb_venv_root=$1
+
+
+script_dir=$(dirname -- "$0")
+
+
+usrshared=/usr/local/share/ticketweb
+
+
+venv_usrshared="$ticketweb_venv_root"$usrshared
+
+
+
+mkdir --parents "$venv_usrshared"
+
+
+
+
+
+
+pip install --force-reinstall "git+https://github.com/danvk/RangeHTTPServer"
+
